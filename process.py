@@ -63,7 +63,7 @@ class Process(object):
     
     def release_resource(self):
         _released_resources = self.assigned_resources
-        self.assigned_resources -= self.assigned_resources
+        self.assigned_resources = [a - b for a, b in zip(self.assigned_resources, self.assigned_resources)]
         return _released_resources
 
     def get_assigned_resource(self):

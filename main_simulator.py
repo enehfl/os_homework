@@ -77,7 +77,7 @@ class ProcessSimulator(object):
 
             t_required_resources = [0]*NUM_OF_RESOURCE_TYPES
             for j in range(0, NUM_OF_RESOURCE_TYPES):
-                t_required_resources[j] = random.randint(0, round(GIVEN_RESOURCES[j]/2))
+                t_required_resources[j] = random.randint(0, round(GIVEN_RESOURCES[j]/2)) ####
             self.process_dispatch_schedule.append([i+1, proc_dispatch_time[i], t_proc_run_time, t_required_resources])
             print([i+1, proc_dispatch_time[i], t_proc_run_time, t_required_resources])
         print("================================================")
@@ -209,11 +209,11 @@ if __name__ == "__main__":
         #   ii)  Allocate resources to process
         #   iii) Put the process to ready queue
         curr_process_waiting_list = simulator.get_process_waiting_list()
-
+        
         while len(curr_process_waiting_list) > 0:
             # i) Run resource manager to pick process 
             [alloc_status, picked_processes] = resource_manager.get_process_to_assign_resources(curr_given_resources, curr_process_waiting_list)
-
+            
             if alloc_status == -1:
                 simulator.is_solvable = False
                 is_sim_finish = True
@@ -226,8 +226,8 @@ if __name__ == "__main__":
             elif alloc_status == 1:
                 # ii) Allocate resource to the process
                 for i in range(0, len(picked_processes)):
-                    t_required_resources = picked_processes.get_required_resource()
-                    picked_processes.assign_resource(t_required_resources)
+                    t_required_resources = picked_processes[i].get_required_resource()
+                    picked_processes[i].assign_resource(t_required_resources)
 
                 # iii) Put process to processor(=CPU)'s ready queue
                 for j in range(0, len(picked_processes)):
@@ -275,16 +275,18 @@ if __name__ == "__main__":
 
 
         for i in range(0, num_processors):
-            simulator.processor_list[i].cleanup_process()
+            result = simulator.processor_list[i].cleanup_process()
+            if result is not None:
+                for j in range(0, 5):
+                    curr_given_resources[j] += result[j]
 
         # print("Remaining dispatch schedule:", curr_dispatch_schedule)
         # print(curr_process_waiting_list, end="")
 
         print("   | {0}".format(len(curr_process_waiting_list)), end="")
-
+        
         simulator.increase_tick()
         input()
-
 
     print("Finish!")
     pass

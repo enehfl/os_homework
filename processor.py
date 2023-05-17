@@ -64,8 +64,10 @@ class Processor(object):
         if self.curr_process is not None:
             if self.curr_process.get_remaining_time() == 0:
                 # terminate process
+                _released_resources = self.curr_process.release_resource()
                 self.curr_process = None
                 self.curr_proc_run_tick = 0
+                return _released_resources
     
     def put_assigned_process_to_ready_queue(self):
         self.processor_ready_queue.append(self.curr_process)
