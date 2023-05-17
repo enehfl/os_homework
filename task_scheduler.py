@@ -19,6 +19,10 @@ def get_process_idx_from_queue(_curr_process, _process_ready_queue, _scheduling_
 def first_come_first_served(_curr_process, _process_ready_queue):
     selected_idx = -1
     # Select process to run
+    if _curr_process is not None:
+        return selected_idx
+    if len(_process_ready_queue) > 0:
+        selected_idx = 0
 
     return selected_idx
 
