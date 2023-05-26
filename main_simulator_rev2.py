@@ -8,7 +8,7 @@ import resource_manager
 
 # - Processor configuration
 NUM_PROCESSORS = 4
-PROCESSOR_SCHEDULING_ALGORITHM = "FCFS"
+PROCESSOR_SCHEDULING_ALGORITHM = "FCFS" #알고리즘 변경 위치
 # FCFS, RR, SJF, etc.
 
 # - Dispatch schedule
