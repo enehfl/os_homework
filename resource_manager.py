@@ -1,5 +1,8 @@
+import process
 
-def get_process_to_assign_resources(_curr_resource_info, _curr_process_waiting_list):
+VERSION = 1.1
+
+def get_process_to_assign_resources(_curr_resource_info, _total_resource_info, _curr_process_waiting_list):
     # Implement deadlock avoidance algorithm based on banker's algorithm
     # If there is no process to pick, return [-1, None]
     # Else, return [1, picked_processes]
@@ -7,22 +10,20 @@ def get_process_to_assign_resources(_curr_resource_info, _curr_process_waiting_l
 
     picked_processes = []
     is_resource_cannot_be_assigned = False
+    available_resources = _curr_resource_info
     
     # Implement deadlock avoidance algorithm based on banker's algorithm
     for i in range(0, len(_curr_process_waiting_list)):
         allow = False
-        j = 0
-        while j < 5:
-            if _curr_resource_info[j] < _curr_process_waiting_list[i].req_resources[j]:
+        for j in range(5):
+            if available_resources[j] < _curr_process_waiting_list[i].req_resources[j]:
                 break
-            j += 1
         else:
             allow = True
-        
-        if allow == True:
+
+        if allow:
             picked_processes.append(_curr_process_waiting_list[i])
-            for k in range(0, 5):
-                _curr_resource_info[k] -= _curr_process_waiting_list[i].req_resources[k]
+            break
 
     if len(picked_processes) > 0:
         return [1, picked_processes]

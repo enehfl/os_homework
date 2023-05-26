@@ -1,5 +1,7 @@
 import time
 
+VERSION = 1.1
+
 class Process(object):
     proc_num = -1
     req_resources = []
@@ -45,7 +47,7 @@ class Process(object):
     # Method to check whether process is finished
     ###################################################
         
-    def is_proc_finisned(self):
+    def is_proc_finished(self):
         if self.accumulated_run_time >= self.req_run_time:
             return True
         else:
@@ -63,7 +65,7 @@ class Process(object):
     
     def release_resource(self):
         _released_resources = self.assigned_resources
-        self.assigned_resources = [a - b for a, b in zip(self.assigned_resources, self.assigned_resources)]
+        self.assigned_resources -= self.assigned_resources
         return _released_resources
 
     def get_assigned_resource(self):
@@ -96,9 +98,9 @@ if __name__ == "__main__":
     print("Run process for 5 tick...")
     test_process.run_proc(5)
     print("Required time to run:", test_process.get_remaining_time())
-    print("Is process finished? (T/F):", test_process.is_proc_finisned())
+    print("Is process finished? (T/F):", test_process.is_proc_finished())
     print("----------------------------------------")
     print("Run process for 5 tick...")
     test_process.run_proc(5)
     print("Required time to run:", test_process.get_remaining_time())
-    print("Is process finished? (T/F):", test_process.is_proc_finisned())
+    print("Is process finished? (T/F):", test_process.is_proc_finished())

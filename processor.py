@@ -2,6 +2,8 @@ import time
 import process
 import task_scheduler
 
+VERSION = 1.1
+
 class Processor(object):
     curr_process = None
     curr_proc_run_tick = 0
@@ -64,10 +66,15 @@ class Processor(object):
         if self.curr_process is not None:
             if self.curr_process.get_remaining_time() == 0:
                 # terminate process
-                _released_resources = self.curr_process.release_resource()
+                resources_to_return = self.curr_process.get_assigned_resource()
                 self.curr_process = None
                 self.curr_proc_run_tick = 0
-                return _released_resources
+
+                return resources_to_return
+            else:
+                return None
+        else:
+            return None
     
     def put_assigned_process_to_ready_queue(self):
         self.processor_ready_queue.append(self.curr_process)

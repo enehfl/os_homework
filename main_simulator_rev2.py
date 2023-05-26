@@ -77,11 +77,10 @@ class ProcessSimulator(object):
 
             t_required_resources = [0]*NUM_OF_RESOURCE_TYPES
             for j in range(0, NUM_OF_RESOURCE_TYPES):
-                t_required_resources[j] = random.randint(0, round(GIVEN_RESOURCES[j]/2)) ####
+                t_required_resources[j] = random.randint(0, round(GIVEN_RESOURCES[j]/2))
             self.process_dispatch_schedule.append([i+1, proc_dispatch_time[i], t_proc_run_time, t_required_resources])
             print([i+1, proc_dispatch_time[i], t_proc_run_time, t_required_resources])
         print("================================================")
-
 
     def generate_new_process(self, _required_run_time, _required_resource_info):
         proc_num_to_assign = self.proc_num
@@ -128,10 +127,42 @@ class ProcessSimulator(object):
 
 
 if __name__ == "__main__":
+    # Check code version
+    is_all_files_up_to_date = True
+    if hasattr(process, 'VERSION'):
+        if process.VERSION != 1.1:
+            is_all_files_up_to_date = False
+            print("ERROR: process.py update required.")
+    else:
+        is_all_files_up_to_date = False
+        print("ERROR: process.py update required.")
+
+    if hasattr(processor, 'VERSION'):
+        if processor.VERSION != 1.1:
+            is_all_files_up_to_date = False
+            print("ERROR: processor.py update required.")
+    else:
+        is_all_files_up_to_date = False
+        print("ERROR: processor.py update required.")
+
+    if hasattr(resource_manager, 'VERSION'):
+        if resource_manager.VERSION != 1.1:
+            is_all_files_up_to_date = False
+            print("ERROR: resource_manager.py update required.")
+    else:
+        is_all_files_up_to_date = False
+        print("ERROR: resource_manager.py update required.")
+
+    if is_all_files_up_to_date:
+        print("All files are up to date!")
+        print()
+    else:
+        print("Files have to be updated!!")
+        exit()
 
     # Environment variables
     num_processors = NUM_PROCESSORS
-    given_resources = GIVEN_RESOURCES
+    current_resources = GIVEN_RESOURCES
     scheduling_algorithm = PROCESSOR_SCHEDULING_ALGORITHM
 
     processor_list = [None]*NUM_PROCESSORS
@@ -153,8 +184,8 @@ if __name__ == "__main__":
 
     is_sim_finish = False
 
-    print("#PROC #TICK : PROC ID | # CPU WAIT | # WAITING QUEUE")
-    print("-----------------------------------------------------")
+    print("#PROC #TICK : PROC ID     | # CPU WAIT | # WAITING QUEUE | CURRENT RESORUCES")
+    print("-------------------------------------------------------------------------------")
 
     while not is_sim_finish:
         is_sim_finish = False
@@ -166,8 +197,6 @@ if __name__ == "__main__":
         curr_sim_time = simulator.get_curr_sim_time()
         curr_processor_info = simulator.get_processor_list()
         curr_dispatch_schedule = simulator.get_dispatch_schedule()
-        curr_given_resources = given_resources
-
 
         # 2.
         #   i) Generate process based on dispatch schedule
@@ -209,15 +238,15 @@ if __name__ == "__main__":
         #   ii)  Allocate resources to process
         #   iii) Put the process to ready queue
         curr_process_waiting_list = simulator.get_process_waiting_list()
-        
+
         while len(curr_process_waiting_list) > 0:
             # i) Run resource manager to pick process 
-            [alloc_status, picked_processes] = resource_manager.get_process_to_assign_resources(curr_given_resources, curr_process_waiting_list)
-            
+            [alloc_status, picked_processes] = resource_manager.get_process_to_assign_resources(current_resources, GIVEN_RESOURCES, curr_process_waiting_list)
+
             if alloc_status == -1:
                 simulator.is_solvable = False
                 is_sim_finish = True
-                print("PROBLEM NOT SOLVABLE!!")
+                print("ERROR: PROBLEM NOT SOLVABLE!! (Resource cannot be assigned forever)")
                 break
             elif alloc_status == 0:
                 # Processes have to be wait until resource is available
@@ -228,6 +257,7 @@ if __name__ == "__main__":
                 for i in range(0, len(picked_processes)):
                     t_required_resources = picked_processes[i].get_required_resource()
                     picked_processes[i].assign_resource(t_required_resources)
+                    current_resources = [a - b for a, b in zip(current_resources, t_required_resources)]
 
                 # iii) Put process to processor(=CPU)'s ready queue
                 for j in range(0, len(picked_processes)):
@@ -248,6 +278,9 @@ if __name__ == "__main__":
                 print("ERROR OCCURED!!")
                 break
         
+        if simulator.is_solvable is False:
+            break
+        
         if len(curr_process_waiting_list) > 0:
             is_sim_finish = False
         
@@ -260,9 +293,9 @@ if __name__ == "__main__":
 
         for i in range(0, num_processors):
             if simulator.processor_list[i].curr_process is None:
-                print("-", end=" ")
+                print("--", end=" ")
             else:
-                print("{0}".format(simulator.processor_list[i].curr_process.get_process_number()), end=" ")
+                print("{0:2d}".format(simulator.processor_list[i].curr_process.get_process_number()), end=" ")
             simulator.processor_list[i].run_process()
 
         print("|", end=" ")
@@ -275,18 +308,19 @@ if __name__ == "__main__":
 
 
         for i in range(0, num_processors):
-            result = simulator.processor_list[i].cleanup_process()
-            if result is not None:
-                for j in range(0, 5):
-                    curr_given_resources[j] += result[j]
+            returned_resources = simulator.processor_list[i].cleanup_process()
+            if returned_resources is not None:
+                current_resources = [a + b for a, b in zip(current_resources, returned_resources)]
 
         # print("Remaining dispatch schedule:", curr_dispatch_schedule)
         # print(curr_process_waiting_list, end="")
 
         print("   | {0}".format(len(curr_process_waiting_list)), end="")
-        
+        print("               | {0}".format(current_resources), end="")
+
         simulator.increase_tick()
         input()
+
 
     print("Finish!")
     pass
