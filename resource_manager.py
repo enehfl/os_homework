@@ -13,7 +13,7 @@ def get_process_to_assign_resources(_curr_resource_info, _total_resource_info, _
     available_resources = _curr_resource_info
     
     # Implement deadlock avoidance algorithm based on banker's algorithm
-    for i in range(0, len(_curr_process_waiting_list)):
+    for i in range(len(_curr_process_waiting_list)):
         allow = False
         for j in range(5):
             if available_resources[j] < _curr_process_waiting_list[i].req_resources[j]:
