@@ -38,9 +38,16 @@ def round_robin(_curr_process, _process_ready_queue, _curr_process_run_tick=-1, 
 def shortest_job_first(_curr_process, _process_ready_queue):
     selected_idx = -1
     # Select process to run
-    
-    
-
+    if _curr_process is not None:
+        return selected_idx
+    if len(_process_ready_queue) == 1:
+        selected_idx = 0
+    elif len(_process_ready_queue) > 1:
+        for i in range(len(_process_ready_queue) - 1):
+            if _process_ready_queue[i].req_run_time <= _process_ready_queue[i + 1].req_run_time:
+                selected_idx = i
+            else:
+                selected_idx = i + 1
     return selected_idx
 
 
