@@ -40,21 +40,38 @@ def shortest_job_first(_curr_process, _process_ready_queue):
     # Select process to run
     if _curr_process is not None:
         return selected_idx
-    if len(_process_ready_queue) == 1:
-        selected_idx = 0
-    elif len(_process_ready_queue) > 1:
-        for i in range(len(_process_ready_queue) - 1):
-            if _process_ready_queue[i].req_run_time <= _process_ready_queue[i + 1].req_run_time:
-                selected_idx = i
-            else:
-                selected_idx = i + 1
+    if len(_process_ready_queue) > 0:
+        if len(_process_ready_queue) == 1:
+            selected_idx = 0
+        else:
+            for i in range(len(_process_ready_queue) - 1):
+                if _process_ready_queue[i].req_run_time <= _process_ready_queue[i + 1].req_run_time:
+                    selected_idx = i
+                else:
+                    selected_idx = i + 1
+
     return selected_idx
 
 
 def shortest_remaining_job_first(_curr_process, _process_ready_queue):
     selected_idx = -1
     # Select process to run
-    
-    
+    if len(_process_ready_queue) > 0:
+        if len(_process_ready_queue) == 1:
+            min = 0
+        else:
+            for i in range(len(_process_ready_queue) - 1):
+                if _process_ready_queue[i].req_run_time <= _process_ready_queue[i + 1].req_run_time:
+                    min = i
+                else:
+                    min = i + 1
+
+        if _curr_process is None:
+            selected_idx = min
+        else:
+            if _curr_process.get_remaining_time() <= _process_ready_queue[min].req_run_time:
+                return selected_idx
+            else:
+                selected_idx = min
 
     return selected_idx
