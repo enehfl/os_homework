@@ -30,7 +30,13 @@ def first_come_first_served(_curr_process, _process_ready_queue):
 def round_robin(_curr_process, _process_ready_queue, _curr_process_run_tick=-1, _time_quantum=-1):
     selected_idx = -1
     # Select process to run
-
+    if len(_process_ready_queue) > 0:
+        if _curr_process is None:
+            selected_idx = 0
+        else:
+            if _curr_process_run_tick >= 0:
+                selected_idx = 0
+                _curr_process_run_tick -= _time_quantum
 
     return selected_idx
 
