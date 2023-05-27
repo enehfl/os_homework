@@ -16,8 +16,8 @@ def get_process_to_assign_resources(_curr_resource_info, _total_resource_info, _
     for i in range(len(_curr_process_waiting_list)):
         allow = False
         for j in range(5):
-            if available_resources[j] < _curr_process_waiting_list[i].req_resources[j]:
-                if _total_resource_info[j] < _curr_process_waiting_list[i].req_resources[j]:
+            if available_resources[j] < _curr_process_waiting_list[i].get_required_resource()[j]:
+                if _total_resource_info[j] < _curr_process_waiting_list[i].get_required_resource()[j]:
                     is_resource_cannot_be_assigned = True
                 break
         else:
